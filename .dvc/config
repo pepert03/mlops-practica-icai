@@ -1,0 +1,7 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/pepert03/mlops-practica-icai.dvc
+    auth = basic
+    user = pepert03
+    password = 6f02cea7507946a12af1c8fbdf90bb4b6f4bffb9
