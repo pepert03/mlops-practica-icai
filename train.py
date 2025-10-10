@@ -10,6 +10,12 @@ import mlflow.sklearn
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pathlib
+from tempfile import TemporaryDirectory
+from mlflow.models import infer_signature
+
+
+tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
+mlflow.set_tracking_uri(tracking_uri)
 
 # Cargar el conjunto de datos desde el archivo CSV
 try:
@@ -51,9 +57,35 @@ with mlflow.start_run():
     # Guardar el modelo entrenado en un archivo .pkl
     joblib.dump(model, "model.pkl")
     # Registrar el modelo con MLflow
-    mlflow.sklearn.log_model(model, "random-forest-model")
+    # Infer signature and provide a small input_example (optional but recommended)
+    signature = infer_signature(X_train, model.predict(X_train))
+    input_example = X_test.iloc[:5]
+
+    with TemporaryDirectory() as tmpdir:
+        # Save MLflow model locally (creates MLmodel + env files)
+        mlflow.sklearn.save_model(
+            model,
+            tmpdir,
+            input_example=input_example,
+            signature=signature,
+        )
+        # Upload the saved directory as artifacts under the run
+        mlflow.log_artifacts(tmpdir, artifact_path="random-forest-model")
     # Registrar parámetros y métricas
     mlflow.log_param("n_estimators", 200)
     mlflow.log_metric("accuracy", accuracy)
     print(f"Modelo entrenado y precisión: {accuracy:.4f}")
     print("Experimento registrado con MLflow.")
+
+print("Experimento registrado con MLflow.")
+# --- Sección de Reporte para CML ---
+# 1. Generar la matriz de confusión
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+plt.title("Matriz de Confusión")
+plt.xlabel("Predicciones")
+plt.ylabel("Valores Reales")
+plt.savefig("confusion_matrix.png")
+print("Matriz de confusión guardada como 'confusion_matrix.png'")
+# --- Fin de la sección de Reporte ---

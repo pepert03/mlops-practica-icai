@@ -2,3 +2,5 @@ __pycache__/
 *.pkl
 *.json
 mlruns/
+mlruns_wsl/
+confusion_matrix.png
