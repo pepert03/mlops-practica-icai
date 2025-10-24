@@ -34,12 +34,13 @@ jobs:
 
       - name: DVC Pull
         env:
-          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_API_KEY }}
+            DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_API_KEY }}
+            DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         run: |
-          # Las credenciales de Dagshub son necesarias para acceder al almacenamiento remoto
-          dvc remote modify origin --local access_key_id $DAGSHUB_API_KEY
-          dvc remote modify origin --local secret_access_key $DAGSHUB_API_KEY
-          dvc pull -r origin
+            # Configure DVC http remote with username + token (local config so it is not committed)
+            dvc remote modify origin --local user ${DAGSHUB_USERNAME}
+            dvc remote modify origin --local password ${DAGSHUB_API_KEY}
+            dvc pull -r origin
 
       - name: Install dependencies
         run: |
