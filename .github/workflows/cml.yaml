@@ -48,11 +48,14 @@ jobs:
           pip install pyyaml
           pip install -r requirements.txt
 
-      - name: Install CML (from GitHub)
+      - name: Setup Node 16
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install CML manually
         run: |
-          python3 -m pip install --upgrade pip
-          # Instala la versión más reciente directamente desde el repo oficial
-          python3 -m pip install git+https://github.com/iterative/cml.git
+          npm install -g @dvcorg/cml
 
       - name: Run training script
         env:
