@@ -63,4 +63,5 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_API_KEY }}
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
         run: |
-          python3 train.py
+          # DVC repro ejecutará la etapa "train" y, por lo tanto, el script train.py.
+          dvc repro
