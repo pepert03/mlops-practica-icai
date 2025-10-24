@@ -189,11 +189,12 @@ plt.ylabel("Valores Reales")
 plt.tight_layout()
 plt.savefig("confusion_matrix.png")
 print("Matriz de confusión guardada como 'confusion_matrix.png'")
+cm_path = os.path.abspath("confusion_matrix.png")
 
 # Optionally also log the confusion matrix as an MLflow artifact (best-effort)
 try:
-    mlflow.log_artifact("confusion_matrix.png", artifact_path="plots")
-    mlflow.log_artifact("metrics.txt", artifact_path="metrics")
+    mlflow.log_artifact(cm_path)
+
 except Exception:
     # If tracking is remote and logging fails, ignore (the runner may not have access)
     pass
