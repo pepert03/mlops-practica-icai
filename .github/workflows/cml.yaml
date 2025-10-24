@@ -21,8 +21,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "TUEMAIL"
-          git config --global user.name "TUUSUARIO"
+          git config --global user.email "202111246@alu.comillas.edu"
+          git config --global user.name "pepert03"
 
       - name: Restore DVC Cache
         uses: actions/cache@v3
