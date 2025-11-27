@@ -1,0 +1,18 @@
+# Usar una imagen base de Python 3.11
+FROM python:3.11-slim
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Copiar requirements e instalar dependencias
+COPY requirements.txt .
+RUN pip install --default-timeout=1000 --no-cache-dir -r requirements.txt
+
+# Copiar el script de la web
+COPY app_web.py .
+
+# Exponer el puerto de Streamlit
+EXPOSE 8501
+
+# Comando para arrancar la web
+CMD ["streamlit", "run", "app_web.py"]

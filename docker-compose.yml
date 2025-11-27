@@ -1,0 +1,18 @@
+services:
+  mlops-api:
+    image: peperidruejo/mlops-api
+    container_name: mlops-api
+    ports:
+      - "5000:5000"
+    restart: always
+
+  mlops-web:
+    image: peperidruejo/mlops-web
+    container_name: mlops-web
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://mlops-api:5000/predict
+    depends_on:
+      - mlops-api
+    restart: always
