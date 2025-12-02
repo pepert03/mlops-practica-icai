@@ -65,3 +65,39 @@ jobs:
         run: |
           # DVC repro ejecutará la etapa "train" y, por lo tanto, el script train.py.
           dvc repro
+  deploy-to-gke:
+    needs: train-and-report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ... (Pasos de setup python y autenticación que ya tenías) ...
+
+      - id: 'auth'
+        name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up gcloud CLI and kubectl
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: 'latest'
+          install_components: 'gke-gcloud-auth-plugin'
+
+      - name: Get GKE credentials
+        run: gcloud container clusters get-credentials ${{ vars.GKE_CLUSTER }} --zone ${{ vars.GKE_ZONE }} --project ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use GCR
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t gcr.io/${{ vars.GCP_PROJECT_ID }}/mlops-api:latest .
+          docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/mlops-api:latest
+
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
