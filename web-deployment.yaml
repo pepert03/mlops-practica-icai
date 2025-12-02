@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlops-web-deployment
+  labels:
+    app: mlops-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlops-web
+  template:
+    metadata:
+      labels:
+        app: mlops-web
+    spec:
+      containers:
+      - name: mlops-web
+        # IMPORTANTE: Asegúrate de que este ID de proyecto es el tuyo
+        image: gcr.io/active-cove-479919-p6/mlops-api:latest
+        ports:
+        - containerPort: 8501
+        env:
+        - name: API_URL
+          value: http://mlops-api-service:80/predict
