@@ -16,10 +16,18 @@ spec:
     spec:
       containers:
       - name: mlops-web
-        # IMPORTANTE: Asegúrate de que este ID de proyecto es el tuyo
         image: gcr.io/active-cove-479919-p6/mlops-web:latest
         ports:
         - containerPort: 8501
         env:
         - name: API_URL
           value: http://mlops-api-service:5000/predict
+        # Configuración vital para que funcione en la nube
+        command:
+        - streamlit
+        - run
+        - app_web.py
+        - --server.enableCORS=false
+        - --server.enableXsrfProtection=false
+        - --server.enableWebsocketCompression=false
+        - --server.address=0.0.0.0
