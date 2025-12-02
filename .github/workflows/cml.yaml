@@ -56,7 +56,15 @@ jobs:
       - name: Install CML manually
         run: |
           npm install -g @dvcorg/cml
-
+      - name: Stop tracking model.pkl in Git
+        run: |
+          # Si el archivo existe en git, lo quitamos del índice pero lo dejamos en disco
+          if git ls-files --error-unmatch model.pkl; then
+            git rm --cached model.pkl
+            echo "model.pkl eliminado de git (cached)"
+          else
+            echo "model.pkl no estaba en git"
+          fi
       - name: Run training script
         env:
           MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
